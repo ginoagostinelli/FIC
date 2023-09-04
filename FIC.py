@@ -6,6 +6,29 @@ import numpy as np
 import transformations as transf
 
 
+def compress_image(img, source_size, destination_size, step):
+    """
+    Compress the input image using fractal image compression.
+
+    Args:
+        img (numpy.ndarray): The input image.
+        source_size (int): Size of the source block.
+        destination_size (int): Size of the destination block.
+        step (int): Step size for block extraction.
+
+    Returns:
+        list: List of transformations for each block.
+    """
+    transformed_blocks = generate_all_transformed_blocks(img, source_size, destination_size, step)
+    i_block_count, j_block_count = img.shape[0] // destination_size, img.shape[1] // destination_size
+
+    transformations = find_best_transformations(
+        img, destination_size, transformed_blocks, i_block_count, j_block_count, step
+    )
+
+    return transformations
+
+
 def generate_all_transformed_blocks(img, source_size, destination_size, step):
     """
     Generate all possible transformed blocks for the given image.
@@ -37,52 +60,6 @@ def generate_all_transformed_blocks(img, source_size, destination_size, step):
                     (k, l, direction, angle, transf.apply_transformation(source_block, direction, angle))
                 )
     return transformed_blocks
-
-
-def estimate_contrast_and_brightness(source_block, destination_block):
-    """
-    Estimate the contrast and brightness adjustments to match the destination block to the source block.
-
-    Args:
-        source_block (numpy.ndarray): The source block.
-        destination_block (numpy.ndarray): The destination block.
-
-    Returns:
-        tuple: Estimated contrast and brightness values.
-    """
-    source_mean = np.mean(source_block)
-    destination_mean = np.mean(destination_block)
-
-    source_variance = np.var(source_block)
-    covar = np.cov(source_block.flatten(), destination_block.flatten())[0][1]
-
-    contrast = covar / source_variance if source_variance > 0 else 1.0
-    brightness = destination_mean - (contrast * source_mean)
-
-    return contrast, brightness
-
-
-def compress_image(img, source_size, destination_size, step):
-    """
-    Compress the input image using fractal image compression.
-
-    Args:
-        img (numpy.ndarray): The input image.
-        source_size (int): Size of the source block.
-        destination_size (int): Size of the destination block.
-        step (int): Step size for block extraction.
-
-    Returns:
-        list: List of transformations for each block.
-    """
-    transformed_blocks = generate_all_transformed_blocks(img, source_size, destination_size, step)
-    i_block_count, j_block_count = img.shape[0] // destination_size, img.shape[1] // destination_size
-
-    transformations = find_best_transformations(
-        img, destination_size, transformed_blocks, i_block_count, j_block_count, step
-    )
-
-    return transformations
 
 
 def find_best_transformations(img, destination_size, transformed_blocks, i_count, j_count, step):
@@ -140,6 +117,29 @@ def find_best_transformation(transformed_blocks, destination_block):
             best_transformation = (k, l, direction, angle, contrast, brightness)
 
     return best_transformation
+
+
+def estimate_contrast_and_brightness(source_block, destination_block):
+    """
+    Estimate the contrast and brightness adjustments to match the destination block to the source block.
+
+    Args:
+        source_block (numpy.ndarray): The source block.
+        destination_block (numpy.ndarray): The destination block.
+
+    Returns:
+        tuple: Estimated contrast and brightness values.
+    """
+    source_mean = np.mean(source_block)
+    destination_mean = np.mean(destination_block)
+
+    source_variance = np.var(source_block)
+    covar = np.cov(source_block.flatten(), destination_block.flatten())[0][1]
+
+    contrast = covar / source_variance if source_variance > 0 else 1.0
+    brightness = destination_mean - (contrast * source_mean)
+
+    return contrast, brightness
 
 
 def decompress_image(transformations, source_size, destination_size, step, num_iterations=8):
