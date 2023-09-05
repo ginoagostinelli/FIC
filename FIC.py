@@ -243,7 +243,7 @@ def load_and_preprocess_image(file_path, reduction_factor):
 
 
 if __name__ == "__main__":
-    file_path = os.path.join(os.path.dirname(__file__), "lena.gif")
+    file_path = "assets/lena.gif"
     reduction_factor = 4
     input_image = load_and_preprocess_image(file_path, reduction_factor)
 
