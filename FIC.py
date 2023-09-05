@@ -241,6 +241,29 @@ def load_and_preprocess_image(file_path, reduction_factor):
     return img
 
 
+def plot_decompressed_images(decompressed_images, rows, cols):
+    """
+    Plot decompressed images in a grid format.
+
+    Args:
+        decompressed_images (list): List of decompressed images.
+        rows (int): Number of rows in the grid.
+        cols (int): Number of columns in the grid.
+    """
+    fig, axes = plt.subplots(rows, cols, figsize=(8, 5))
+
+    for i in range(rows):
+        for j in range(cols):
+            index = i * cols + j
+            if index < len(decompressed_images):
+                axes[i, j].imshow(decompressed_images[index], cmap="gray")
+                axes[i, j].axis("off")
+                axes[i, j].set_title(f"Iteration {index+1}")
+
+    plt.tight_layout()
+    plt.show()
+
+
 if __name__ == "__main__":
     file_path = "assets/lena.gif"
     reduction_factor = 4
@@ -250,6 +273,4 @@ if __name__ == "__main__":
 
     decompressed_images = decompress_image(compressed_transformations, 8, 4, 8, num_iterations=8)
 
-    plt.figure()
-    plt.imshow(decompressed_images[8], cmap="gray", interpolation="none")
-    plt.show()
+    plot_decompressed_images(decompressed_images, rows=2, cols=4)
