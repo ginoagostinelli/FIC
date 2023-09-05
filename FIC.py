@@ -163,10 +163,10 @@ def decompress_image(transformations, source_size, destination_size, step, num_i
 
     for iteration in range(num_iterations):
         current_img = apply_transformations_to_blocks(
-            transformations, iterations[-1], source_size, destination_size, step, factor
+            transformations, current_img, iterations, source_size, destination_size, step, factor
         )
         iterations.append(current_img)
-
+        current_img = np.zeros((height, width))
     return iterations
 
 
@@ -185,7 +185,7 @@ def initialize_random_image(height, width):
 
 
 def apply_transformations_to_blocks(
-    transformations, current_img, source_size, destination_size, step, factor
+    transformations, current_img, iterations, source_size, destination_size, step, factor
 ):
     """
     Apply transformations to blocks in the current image.
@@ -201,13 +201,12 @@ def apply_transformations_to_blocks(
     Returns:
         numpy.ndarray: Updated image after applying transformations.
     """
-    height, width = current_img.shape
     for i, row in enumerate(transformations):
         for j, t in enumerate(row):
             if t is not None:
                 k, l, flip, angle, contrast, brightness = t
                 source_block = transf.reduce(
-                    current_img[k * step : k * step + source_size, l * step : l * step + source_size],
+                    iterations[-1][k * step : k * step + source_size, l * step : l * step + source_size],
                     factor,
                 )
                 destination_block = transf.apply_transformation(
@@ -249,8 +248,8 @@ if __name__ == "__main__":
 
     compressed_transformations = compress_image(input_image, 8, 4, 8)
 
-    decompressed_images = decompress_image(compressed_transformations, 8, 4, 8, num_iterations=20)
+    decompressed_images = decompress_image(compressed_transformations, 8, 4, 8, num_iterations=8)
 
     plt.figure()
-    plt.imshow(decompressed_images[20], cmap="gray", interpolation="none")
+    plt.imshow(decompressed_images[8], cmap="gray", interpolation="none")
     plt.show()
