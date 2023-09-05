@@ -1,9 +1,11 @@
+import imageio
 import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy import ndimage
 import numpy as np
 import transformations as transf
+from utils import plot_decompressed_images, compress_with_jpeg, calculate_psnr
 
 
 def compress_image(img, source_size, destination_size, step):
@@ -241,29 +243,6 @@ def load_and_preprocess_image(file_path, reduction_factor):
     return img
 
 
-def plot_decompressed_images(decompressed_images, rows, cols):
-    """
-    Plot decompressed images in a grid format.
-
-    Args:
-        decompressed_images (list): List of decompressed images.
-        rows (int): Number of rows in the grid.
-        cols (int): Number of columns in the grid.
-    """
-    fig, axes = plt.subplots(rows, cols, figsize=(8, 5))
-
-    for i in range(rows):
-        for j in range(cols):
-            index = i * cols + j
-            if index < len(decompressed_images):
-                axes[i, j].imshow(decompressed_images[index], cmap="gray")
-                axes[i, j].axis("off")
-                axes[i, j].set_title(f"Iteration {index+1}")
-
-    plt.tight_layout()
-    plt.show()
-
-
 if __name__ == "__main__":
     file_path = "assets/lena.gif"
     reduction_factor = 4
@@ -274,3 +253,14 @@ if __name__ == "__main__":
     decompressed_images = decompress_image(compressed_transformations, 8, 4, 8, num_iterations=8)
 
     plot_decompressed_images(decompressed_images, rows=2, cols=4)
+
+    # Compare with JPEG compression
+    jpeg_compressed_image = compress_with_jpeg(input_image, jpeg_quality=95)
+
+    # Calculate PSNR
+    psnr_jpeg = calculate_psnr(input_image, jpeg_compressed_image)
+    last_decompressed_image = decompressed_images[-1]
+    psnr_fractal = calculate_psnr(input_image, last_decompressed_image)
+    print("# ------- Fractal vs. JPEG ------- #")
+    print(f"PSNR (JPEG compression): {psnr_jpeg:.2f} dB")
+    print(f"PSNR (Fractal compression): {psnr_fractal:.2f} dB")
