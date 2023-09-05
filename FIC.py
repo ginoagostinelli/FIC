@@ -7,6 +7,13 @@ import numpy as np
 import transformations as transf
 from utils import plot_decompressed_images, compress_with_jpeg, calculate_psnr
 
+# Parameters
+file_path = "assets/lena.gif"
+reduction_factor = 4
+source_size = 8
+destination_size = 4
+step = 8
+
 
 def compress_image(img, source_size, destination_size, step):
     """
@@ -244,13 +251,13 @@ def load_and_preprocess_image(file_path, reduction_factor):
 
 
 if __name__ == "__main__":
-    file_path = "assets/lena.gif"
-    reduction_factor = 4
     input_image = load_and_preprocess_image(file_path, reduction_factor)
 
-    compressed_transformations = compress_image(input_image, 8, 4, 8)
+    compressed_transformations = compress_image(input_image, source_size, destination_size, step)
 
-    decompressed_images = decompress_image(compressed_transformations, 8, 4, 8, num_iterations=8)
+    decompressed_images = decompress_image(
+        compressed_transformations, source_size, destination_size, step, num_iterations=8
+    )
 
     plot_decompressed_images(decompressed_images, rows=2, cols=4)
 
