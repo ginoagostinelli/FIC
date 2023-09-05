@@ -234,7 +234,8 @@ def load_and_preprocess_image(file_path, reduction_factor):
     """
     img = mpimg.imread(file_path)
 
-    img = np.mean(img[:, :, :2], 2)  # Convert the image to grayscale
+    if len(img.shape) == 3:
+        img = np.mean(img[:, :, :2], 2)  # Convert the image to grayscale
 
     img = transf.reduce(img, reduction_factor)  # Apply initial reduction
 
@@ -242,7 +243,7 @@ def load_and_preprocess_image(file_path, reduction_factor):
 
 
 if __name__ == "__main__":
-    file_path = os.path.join(os.path.dirname(__file__), "image.gif")
+    file_path = os.path.join(os.path.dirname(__file__), "lena.gif")
     reduction_factor = 4
     input_image = load_and_preprocess_image(file_path, reduction_factor)
 
