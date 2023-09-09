@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 from scipy import ndimage
 import numpy as np
 import transformations as transf
-from utils import plot_decompressed_images, compress_with_jpeg, calculate_psnr
+from utils import compress_with_jpeg, calculate_psnr, plot_decompressed_images, plot_psnr_comparation
 
 # Parameters
 file_path = "assets/lena.gif"
@@ -263,7 +263,6 @@ if __name__ == "__main__":
 
     # Compare with JPEG compression
     jpeg_compressed_image = compress_with_jpeg(input_image, jpeg_quality=95)
-
     # Calculate PSNR
     psnr_jpeg = calculate_psnr(input_image, jpeg_compressed_image)
     last_decompressed_image = decompressed_images[-1]
@@ -271,3 +270,5 @@ if __name__ == "__main__":
     print("# ------- Fractal vs. JPEG ------- #")
     print(f"PSNR (JPEG compression): {psnr_jpeg:.2f} dB")
     print(f"PSNR (Fractal compression): {psnr_fractal:.2f} dB")
+
+    plot_psnr_comparation(decompressed_images[-1], psnr_fractal, jpeg_compressed_image, psnr_jpeg)

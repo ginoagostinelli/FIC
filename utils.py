@@ -26,6 +26,20 @@ def plot_decompressed_images(decompressed_images, rows, cols):
     plt.show()
 
 
+def plot_psnr_comparation(fractal_img, fractal_psnr, jpeg_img, jpeg_psnr):
+    fig, axes = plt.subplots(1, 2, figsize=(6, 4))
+    axes[0].imshow(fractal_img, cmap="gray")
+    axes[0].set_title(f"Fractal PSNR: {fractal_psnr:.2f} dB")
+    axes[0].axis("off")
+
+    axes[1].imshow(jpeg_img, cmap="gray")
+    axes[1].set_title(f"JPEG PSNR: {jpeg_psnr:.2f} dB")
+    axes[1].axis("off")
+
+    plt.tight_layout()
+    plt.show()
+
+
 def compress_with_jpeg(input_image, jpeg_quality=95):
     """
     Compress the input image using JPEG compression.
